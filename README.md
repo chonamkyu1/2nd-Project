@@ -21,5 +21,9 @@
 ![image](https://user-images.githubusercontent.com/89522900/146040888-80545d80-5079-4f7c-91f9-84bf85da766b.png)
 
 <h2>📌&nbsp;4. 실행결과</h2><br> 
-<img width="900px" height="600px" src="https://user-images.githubusercontent.com/89522900/146042128-ffbf857c-7ba8-4f48-9b69-8ca09cfc87ed.gif">
+<div style="background-color:gray width=100%">
+<img width="600px" height="400px" src="https://user-images.githubusercontent.com/89522900/146042128-ffbf857c-7ba8-4f48-9b69-8ca09cfc87ed.gif">
+<img width="600px" height="400px" src="https://user-images.githubusercontent.com/89522900/146042849-3d232926-c558-4883-ac21-5116b38d1f40.gif">
+<img width="600px" height="400px" src="https://user-images.githubusercontent.com/89522900/146043348-4267bfd5-033d-48f7-b01b-07a66127ae6b.gif">
+</div>
 
