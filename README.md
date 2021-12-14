@@ -19,3 +19,6 @@
 <h2>📌&nbsp;3. 구현 ERD</h2><br> 
 
 ![image](https://user-images.githubusercontent.com/89522900/146040888-80545d80-5079-4f7c-91f9-84bf85da766b.png)
+
+<h2>📌&nbsp;4. 기능구현</h2><br> 
+<img width="900px" height="600px" src="https://user-images.githubusercontent.com/89522900/144745956-61910b22-d0ad-4ee7-9eb2-8faaa18127de.gif">
