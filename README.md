@@ -12,9 +12,9 @@
 
 <h2>📌&nbsp;2. 소스코드</h2>
 
-* model 
+* [model]() 
 * [view](/bitElectro/src/com/bc/model/vo/)
-* controller 
+* [controller](/bitElectro/src/com/bitElectro/controller/) 
 * sql 
 
 <h2>📌&nbsp;3. 구현 ERD</h2><br> 
