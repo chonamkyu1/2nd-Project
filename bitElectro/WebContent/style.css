@@ -1,0 +1,181 @@
+
+body {
+text-align: center;	
+  font-family: "맑은고딕", "돋음", arial, sans-serif;
+  font-size: 12px;
+  background: white;
+}
+body,
+button,
+input,
+select,
+table,
+textarea {
+  font-family: "맑은 고딕", "돋움", "굴림", Arial, sans-serif;
+}
+
+ h1{
+ color : #606060;
+ }
+hr{
+width : 70%;
+}
+
+.buttonBox{
+border: 1px solid darkgrey;
+width : 100px;
+height : 40px;
+border-radius: 10%;
+}
+
+.buttonBox:hover {
+border : none;
+background-color: grey;
+color:white;
+font-weight:bold;
+border-radius: 10%;
+transition: 0.5s;
+}
+
+input {
+height : 30px;
+border : 1px solid black;
+border-radius: 5px;
+
+}
+
+select {
+height : 30px;
+border : 1px solid black;
+border-radius: 5px;
+}
+
+ table{
+ margin-left : auto;
+ margin-right: auto;
+ border : none;
+ }
+ 
+ th{
+ background-color: ghostwhite;
+ height : 50px;
+ border : 2px solid lightgrey;
+ border-radius: 5px 5px 0px 0px;
+ opacity: 0.5s;
+ padding : 5px;
+ }
+ 
+ th:hover{
+ background-color: grey;
+ transition: 0.5s;
+ color : white;
+ }
+ 
+ 
+ td{
+ border:2px solid lightgrey;
+ font-size:0.9em;
+ height : 50px;
+ text-align: center;
+ border-radius: 5px;
+ padding : 5px;
+ }
+
+ 
+ h4 a:hover{
+ text-decoration: underline;
+ color:black;
+ }
+ 
+ td a:hover{
+ text-decoration: underline;
+ color:black;
+ }
+ 
+ a{
+ text-decoration: none;
+ color:black;
+ }
+ 
+ #board {
+ margin-left : auto;
+ padding : 10px;
+ width : 860px;
+  border-collapse: collapse;
+
+ }
+ 
+ #board td{
+ border : 1px 0px solid lightgrey;
+
+ }
+ 
+ #board th{
+ height : 20px;
+  border-radius: 5px 5px 0px 0px;
+
+ }
+ 
+ #board #pname{
+ width : 300px;
+ }
+ 
+ #board #pprice{
+ width : 200px;
+ }
+ 
+ #board #pstock{
+ width : 200px;
+ }
+ 
+ #board .thumb{
+ border : 1px solid darkgrey;
+ width:150px;
+ height:150px;
+ }
+ 
+ #board .desc{
+ border : 1px solid darkgrey;
+ width:200px;
+ }
+ 
+ #board #tdHead{
+ border:none;
+ }
+ 
+ #tdHead{
+ border:none;
+ }
+ 
+ #board #tdBottom{
+ border : none;
+ }
+ 
+ #board input{
+ width : 250px;
+ border : 1px solid light grey;
+ }
+ 
+ #board select{
+  width : 150px;
+ border : 1px solid light grey;
+ }
+ 
+ #prodBoard td{
+ 
+ width : 15%;
+ 
+ }
+ 
+ 
+ #amountBoard td {
+ font-weight : bold;
+ font-size : 1.2em;
+ width : 33%;
+ }
+ 
+ #amountBoard p{
+ font-weight : bold;
+ text-align: center;
+ color:darkgrey;
+ }

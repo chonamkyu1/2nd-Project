@@ -1,0 +1,31 @@
+1) mbirth를 주민번호로 바꾸고 데이터 타입 VARCHAR2로 변경 (OK)
+1-1)성별 컬럼 삭제 (OK)
+ㄴ 이에 따른 jsp, controller, mapper 변경 필요 (OK)
+
+
+2) resist에서 무결성 테스트해야함 (OK)
+-javascript로 진행할 것.
+-id 4~12이내
+-pwd 4~12이내
+-pwd와 pwd2가 동일해야 할 것.
+-생일값 6자리일 것.
+-모든 값은 빈칸이 없을 것
+
+
+3) 관리자 List 제작
+
+관리자 검색 -> function
+*id로 찾기 -> selectOne
+*이름으로 찾기 -> selectOneByName
+
+1. jquery xml ajx사용 
+2. 검색전에는 모든 리스트가 처음부터 나올수 있도록 할것.
+3. 검색을 누르면 현재 리스트가 지워지고 새로써져야 함.
+
+리스트 상세보기 - > href
+
+관리자 수정 -> href
+
+관리자 삭제 -> function
+
+

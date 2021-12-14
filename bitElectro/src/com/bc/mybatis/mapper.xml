@@ -1,0 +1,375 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="bitElectro">
+
+ <!--======================================  고객센터  =============================================-->
+
+	<!-- 고객센터 전체 글{notice(1), faq(2), inquire(3)}의 전체 건수 조회 -->
+	<select id="noticeTotalCount" resultType="int" parameterType="int">
+		SELECT COUNT(*) AS CNT FROM CUSTOMER_CENTER  WHERE CCATEGORY = #{num}
+	</select>
+	
+	<!-- 고객센터 페이지에 해당하는 게시글 조회 -->
+	<select id="noticeboardlist" resultType="com.bc.model.vo.NoticeVO"
+			parameterType="map">
+		SELECT * FROM 
+			(SELECT ROWNUM RNUM, B.*
+      			FROM (SELECT *
+			      FROM CUSTOMER_CENTER
+			      WHERE CCATEGORY = #{num}
+			      ORDER BY CNO DESC)B)
+		 WHERE RNUM BETWEEN #{begin} AND #{end}
+	</select>
+	
+	<!-- 고객센터 페이지에서 게시글 하나 조회 -->
+	<select id="noticeBoardOne" parameterType="map" resultType="com.bc.model.vo.NoticeVO">
+   	SELECT * FROM
+		(SELECT * FROM 
+			(SELECT ROWNUM RNUM, CNO, CSUBJECT, MID, CCONTENT, CRDATE, CCATEGORY
+    			FROM (SELECT *
+			            FROM CUSTOMER_CENTER
+			            WHERE CCATEGORY = #{ccategory}
+			            ORDER BY CNO DESC)B)
+		      	WHERE RNUM BETWEEN #{begin} AND #{end})
+    			WHERE RNUM = #{rnum}
+	</select>
+	
+	<!-- 고객센터 페이지에서 문의내역 insert-->
+	<insert id="insertInquire" parameterType="com.bc.model.vo.NoticeVO">
+	INSERT INTO CUSTOMER_CENTER (CNO, MID, CSUBJECT, CCONTENT, CSECRET, CIMAGE, CRDATE, CCATEGORY, CSTATUS)
+	VALUES ((SELECT NVL(MAX(CNO),0)+1 FROM CUSTOMER_CENTER c), #{mid}, #{csubject}, #{ccontent}, 0, 0, sysdate, 3, '확인중')   
+	</insert>
+	
+	<!-- 고객센터 게시판 글 update -->
+	<update id="updateInquire" parameterType="com.bc.model.vo.NoticeVO">
+	UPDATE CUSTOMER_CENTER SET CSUBJECT = #{csubject}, CCONTENT = #{ccontent} WHERE CNO = #{cno}
+	</update>
+	
+	<!-- 고객센터 게시판 글 delete -->
+	<delete id="deleteNoticeOne" parameterType="int">
+	DELETE FROM CUSTOMER_CENTER WHERE CNO = #{cno}
+	</delete>
+	
+ <!--======================================  장바구니  =============================================-->
+	<!-- 장바구니 아이디 값으로 정보 select -->
+	<select id="cartSelectList" parameterType="String" resultType="com.bc.model.vo.CartVO">
+	SELECT * FROM CART WHERE MID = #{mid} ORDER BY CNTO
+	</select>
+
+	<!-- 장바구니 하나 삭제 -->
+	<delete id="cartDeleteOne" parameterType="map">
+	DELETE FROM CART WHERE CNTO = #{cnto} AND MID = #{mid}
+	</delete>
+	
+	<!-- 장바구니 하나 업데이트 -->
+	<update id="cartNumUpdate">
+	UPDATE CART SET pcnt = #{pcnt} WHERE cnto = #{cnto} and MID = #{mid}
+	</update>
+	
+	<!-- 장바구니 입력 insert -->
+	<insert id= "insertCart" parameterType = "com.bc.model.vo.CartVO">
+	INSERT INTO CART (CNTO, PCODE, MID, CNO, PCNT)
+    VALUES (CART_CNTO_SEQ.NEXTVAL, #{pcode}, #{mid}, #{cno}, #{pcnt}  
+	</insert>
+	
+ <!--======================================  회원 정보  =============================================-->
+	<!-- 회원 아이디로 정보 찾기 -->
+	<select id = "selectMemberOne" resultType="com.bc.model.vo.MemberVO" parameterType="String">
+	SELECT * FROM MEMBER WHERE MID = #{mid }
+	</select>
+	
+	<!-- 회원 정보로 회원 유무 확인 -->
+	<!-- <select id = "selectValidateMember" resultType="com.bc.model.vo.MemberVO" parameterType="map">
+	
+	</select> -->
+	
+	<!-- 비회원 문의하기 진행 시 비회원 정보 등록 -->
+	
+	<select id = "InsertNonMember" resultType="com.bc.model.vo.MemberVO" parameterType="com.bc.model.vo.MemberVO">
+	SELECT * 
+		FROM MEMBER 
+	WHERE MNAME = #{mname } 
+		AND MEMAIL = #{memail }
+		AND MPHONE = #{mphone }
+	</select>
+	
+ <!--======================================  남규 회원 정보  =============================================-->
+	
+	<select id="list" parameterType="logIn" resultType="logIn">
+	 	SELECT MID FROM MEMBER ORDER BY MID
+	 </select>
+	 
+	<!-- 로그인 id, pw 뽑을 때 -->
+	<select id="logIn" parameterType="logIn" resultType="logIn" >
+		SELECT MID, MPW, MNAME, MPHONE, MADDRESS, MJUMIN, MEMAIL, MPOINT, MCUMULATIVE_BUY, MJOINDATE, MCLASS
+		 FROM MEMBER
+		WHERE MID = #{mid} AND MPW = #{mpw}
+	</select> 
+
+	<!-- 아이디 찾기 -->	
+	<select id="findId" parameterType="map" resultType="com.bc.model.vo.LogInVO" >
+	SELECT MID, MPW, MNAME, MPHONE, MADDRESS, MJUMIN, MEMAIL, MPOINT, MCUMULATIVE_BUY, MJOINDATE, MCLASS
+ 	 FROM MEMBER
+	WHERE MNAME = #{mname} AND MPHONE = #{mphone}
+	</select>
+	
+	<!-- 비밀번호 찾기 -->
+	<select id="findPassword" resultType="com.bc.model.vo.LogInVO">
+	SELECT MID, MPW, MNAME, MPHONE, MADDRESS, MJUMIN, MEMAIL, MPOINT, MCUMULATIVE_BUY, MJOINDATE, MCLASS
+ 	FROM MEMBER
+ 	WHERE MID =  #{mid}  AND MNAME = #{mname} AND MPHONE = #{mphone}
+	</select>
+	
+	<!-- 회원가입 -->
+	<!-- 필요한 인덱스가 아이디, 비밀번호, 비밀번호확인, 전화번호, 생년월일, 주소, 이메일 -->
+	<!-- id, 비밀번호, 이름, 전화번호, 주소, 주민등록번호, 이메일, 포인트, 누적금액, 가입일, 회원구분(등급) -->
+	<insert id="joinMemberShip" parameterType="com.bc.model.vo.LogInVO">
+		INSERT INTO MEMBER
+			( MID, MPW, MNAME, MPHONE, MADDRESS, MJUMIN, MEMAIL, MPOINT, MCUMULATIVE_BUY, MJOINDATE, MCLASS  )
+		VALUES( #{mid}, #{mpw}, #{mname}, #{mphone}, #{maddress}, #{mjumin}, #{memail}, 0, 0, SYSDATE, 2 )
+	</insert>
+	
+	<!-- 로그인 map 방식 -->
+	<select id="logInMap" parameterType="map" resultType="logIn">
+		SELECT *
+		FROM MEMBER
+		<where>
+			<if test="idx == 0">
+				MID = #{keyword}
+			</if>
+			<if test="idx == 1">
+				MPW = #{keyword}
+			</if>
+		</where>
+	</select>
+	
+	<!-- 비밀번호 재설정 처리 udate문 -->
+	<update id="updatePassword" parameterType="logIn">
+		UPDATE MEMBER
+		SET MPW = #{mpw}
+		WHERE MID = #{mid}
+	</update>
+	
+	<!-- 회원정보 수정 -->
+	<update id="updateMember" parameterType="logIn">
+		UPDATE MEMBER
+		SET MPW = #{mpw},
+			MPHONE = #{mphone},
+			MEMAIL = #{memail},
+			MADDRESS = #{maddress}
+		WHERE MID = #{mid}
+	</update>
+	
+	<!-- 회원탈퇴 -->
+	<delete id="deleteMember" parameterType="logIn">
+		DELETE FROM MEMBER WHERE MID = #{mid}
+	</delete>
+	
+	<!-- 아이디 중복확인 -->
+	<select id="idCheck" parameterType="logIn" resultType="int">
+		SELECT COUNT(*) FROM MEMBER WHERE MID = #{mid}
+	</select>
+	
+ <!--======================================  관리자 정보  =============================================-->
+	 <!-- <resultMap type="com.bc.model.vo.MemberVO" id="MemberResult">
+		<result column ="MID" property ="mid"/>
+		<result column ="MNAME" property ="mname"/>
+		<result column ="MPHONE" property ="mphone"/>
+		<result column ="MADDRESS" property ="maddress"/>
+		<result column ="MJUMIN" property ="mjumin"/>
+		<result column ="MEMAIL" property ="memail"/>
+		<result column ="MPOINT" property ="mpoint"/>
+		<result column ="MCUMULATIVE_BUY" property ="mcumulative_buy"/>
+		<result column ="MJOINDATE" property ="mjoindate"/>
+		<result column ="MCLASS" property ="mclass"/>
+	</resultMap>  -->
+	
+	<!-- 전체 가입 유저 리스트 -->
+	<select id="selectAdminAll" resultType="com.bc.model.vo.MemberVO">
+	SELECT * FROM MEMBER
+	</select>
+	
+	<!-- 아이디로 찾기 -->
+	<select id = "selectAdminOne" resultType="com.bc.model.vo.MemberVO" parameterType="String">
+	SELECT * FROM MEMBER WHERE MID LIKE #{mid } AND MCLASS &lt;= 1
+	</select>
+	
+	<!-- 이름으로 찾기 -->
+	<select id = "selectListByName" resultType="com.bc.model.vo.MemberVO" parameterType="String">
+	SELECT * FROM MEMBER WHERE MNAME LIKE #{mname } AND MCLASS &lt;= 1
+	</select>
+	
+	<!-- 관리자 리스트 Select -->
+	<select id="adminList" resultType="com.bc.model.vo.MemberVO">
+	SELECT * FROM MEMBER WHERE MCLASS &lt;= 1
+	</select>
+	
+	<!-- 등록 -->
+	<insert id = "insertAdmin" parameterType="com.bc.model.vo.MemberVO">
+	INSERT INTO MEMBER (MID, MPW, MNAME
+				,MPHONE,MADDRESS,MJUMIN,MEMAIL,
+				MPOINT,MCUMULATIVE_BUY,MJOINDATE,MCLASS)
+	VALUES (#{mid}, #{mpw}, #{mname}, #{mphone}, #{maddress}, #{mjumin}, #{memail}, 0, 0, SYSDATE, 1) 
+	</insert>
+	
+	
+	<!-- 관리자 정보 수정 -->
+	<update id="updateAdmin" parameterType ="com.bc.model.vo.MemberVO">
+	UPDATE MEMBER SET
+	MPW= #{mpw},
+	MNAME= #{mname},
+	MPHONE= #{mphone},
+	MADDRESS= #{maddress},
+	MJUMIN=#{mjumin},
+	MEMAIL=#{memail}
+	WHERE MID = #{mid}
+	</update>
+	
+	<!-- 관리자 정보 삭제 -->
+	<delete id ="deleteAdmin" parameterType="com.bc.model.vo.MemberVO">
+	DELETE FROM MEMBER WHERE MID = #{mid}
+	</delete>
+	
+	
+	<!--======================================  상품 정보  ============================================= -->
+	<!-- <resultMap type="com.bitElectro.vo.ProductVO" id="ProductResult">
+		<result column ="PCODE" property ="pcode"/>
+		<result column ="CNO" property ="cno"/>
+		<result column ="PNAME" property ="pname"/>
+		<result column ="PPRICE" property ="pprice"/>
+		<result column ="PIMAGE" property ="pimage"/>
+		<result column ="PSTOCK" property ="pstock"/>
+		<result column ="PDESCRIPTION" property ="pdescription"/>
+		<result column ="PDISCOUNT" property ="pdiscount"/>
+		<result column ="PREGIST" property ="pregist"/>
+		<result column ="PCUMULATIVE_SALES" property ="pcumulative_salesclass"/>
+		<result column ="PREATING" property ="preating"/>
+		<result column ="PREVIEW_COUNT" property ="preview_count"/>
+	
+	</resultMap> -->
+	
+	<!-- 상품 전체리스트 불러오기 -->
+	<select id="selectProdAll" resultType="com.bc.model.vo.ProductVO">
+	SELECT * FROM PRODUCT
+	</select> 
+	
+	<!-- 카테고리 X 제품 리스트 -->
+	<select id ="selectCpList" resultType="com.bc.model.vo.CateProdVO">
+	SELECT PCODE, PNAME,P.CNO, cmain,cmiddle,csub,PPRICE, PSTOCK,PREGIST
+	FROM PRODUCT P, CATEGORY C
+	where p.cno=c.cno
+	</select>
+	
+	<!-- 카테고리 X 제품 WHERE 검색어 리스트 -->
+	
+	<select id="selectKeyList" resultType="com.bc.model.vo.CateProdVO" parameterType="String">
+	SELECT PCODE, PNAME,P.CNO, cmain,cmiddle,csub,PPRICE, PSTOCK,PREGIST
+	FROM PRODUCT P, CATEGORY C
+	Where pname Like #{pname} and p.cno=c.cno
+	</select>
+	
+	<!-- 카테고리 분류만으로 찾기 -->
+	<select id="selectCateList" resultType="com.bc.model.vo.CateProdVO" parameterType="com.bc.model.vo.CategoryVO">
+	SELECT PNAME,P.CNO, cmain,cmiddle,csub,PPRICE, PSTOCK,PREGIST
+	FROM PRODUCT P, CATEGORY C
+	Where p.cno=c.cno and cmain = #{cmain} and cmiddle = #{cmiddle} and csub = #{csub}
+	
+	</select>
+	
+	
+	<!-- pcode로 상품 찾기 -->
+	<select id="selectProd" resultType="com.bc.model.vo.ProductVO" parameterType="String">
+	SELECT * FROM PRODUCT WHERE PCODE = #{pcode}
+	</select>
+	
+	<!-- pname으로 상품 찾기 -->
+	<select id="selectProdNyPname" resultType="com.bc.model.vo.ProductVO" parameterType="String">
+	SELECT * FROM PRODUCT WHERE PNAME = #{pname}
+	</select>
+	
+	<!-- 상품 등록하기 -->
+	<insert id="insertProd" parameterType="com.bc.model.vo.ProductVO">
+	INSERT INTO PRODUCT(PCODE,CNO,PNAME,PPRICE,PIMAGE
+	,PSTOCK,PDESCRIPTION,PDISCOUNT,PREGIST
+	,PCUMULATIVE_SALES,PREATING,PREVIEW_COUNT
+	)
+	VALUES(#{pcode}||PRODUCT_PCODE_SEQ.NEXTVAL,#{cno},#{pname},#{pprice},#{pimage},#{pstock},#{pdescription},0,SYSDATE,0,0,0)
+	</insert>
+	
+	<!-- 썸네일 이미지만 업데이트 -->
+	<update id="updatePimage" parameterType="com.bc.model.vo.ProductVO">
+	UPDATE PRODUCT SET
+	PIMAGE = #{pimage}
+	WHERE PCODE=#{pcode};
+	</update>
+	
+	<!-- 상세페이지 이미지만 업데이트 -->
+	<update id ="updatePdesc" parameterType="com.bc.model.vo.ProductVO">
+	UPDATE PRODUCT SET
+	PDESCRIPTION = #{pdescription}
+	WHERE PCODE=#{pcode};
+	</update>
+	
+	<!-- 상품 정보 업데이트 -->
+	<update id ="updateProd" parameterType="com.bc.model.vo.ProductVO">
+	UPDATE PRODUCT SET
+	CNO = #{cno},
+	PNAME = #{pname},
+	PPRICE = #{pprice},
+	PSTOCK = #{pstock},
+	PDISCOUNT =#{pdiscount},
+	PREGIST =SYSDATE
+	WHERE PCODE =#{pcode}
+	</update>
+	
+	<delete id="deleteProd" parameterType="String">
+	DELETE FROM PRODUCT WHERE PCODE = #{pcode}
+	</delete>
+	
+	<!-- ===================카테고리 찾기=============================== --> 
+	<select id = "selectCtOne" resultType="com.bc.model.vo.CategoryVO" parameterType="com.bc.model.vo.CategoryVO">
+	SELECT * FROM CATEGORY
+	WHERE CMAIN= #{cmain} AND CMIDDLE =#{cmiddle} AND CSUB=#{csub}
+	</select>
+	
+	<select id = "selectCateByNum" resultType="com.bc.model.vo.CategoryVO" parameterType="String">
+	SELECT * FROM CATEGORY
+	WHERE CNO = #{cno}
+	</select>
+	
+	
+	<!--======================================  OrderBook 관련  ============================================= -->
+	    <resultMap type="com.bc.model.vo.MemberVO" id="MemberVO">
+			<result column="MNAME" property="mname" />
+			<result column="MPHONE" property="mphone" />
+			<result column="MADDRESS" property="maddress" />
+			<result column="MJUMIN" property="mjumin" />
+			<result column="MEMAIL" property="memail" />
+		</resultMap>
+		<!-- 1 : 다 관계의 경우 데이터 매핑시켜준다. 
+			association => 1 : 1 관계 
+			collection => 1 : 다 관계 (한명의 유저가 작성한 글 목록)
+			일반 컬럼과 pk 구분 가능 pk 칼럼에게는 result 아닌 id 사용
+		 -->
+		<resultMap type="com.bc.model.vo.OrderBookVO" id="OrderBookVO">
+			<result column="ONO" property="ono" />
+			<result column="ODATE" property="odate" />
+			<result column="O_AMOUNT" property="oamount" />
+			<collection property="MemberVO" resultMap="MemberVO"/>
+		</resultMap>
+	 
+	
+	<!-- 주문번호 찾기 -->
+	<select id ="orderBookSearch" resultMap="OrderBookVO" parameterType="String">
+	SELECT M.MID, M.MNAME, M.MPHONE, M.MADDRESS, M.MJUMIN, M.MEMAIL, 
+	   OB.ONO, OB.ODATE, OB.O_AMOUNT 
+	FROM MEMBER M, ORDER_BOOK OB
+	WHERE M.MID = OB.MID
+		AND M.MID = #{mid}
+		AND OB.ONO = #{mjumun}
+	</select>	
+	
+</mapper>

@@ -1,0 +1,363 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="project">
+
+
+ <!--======================================  관리자 정보  =============================================-->
+<resultMap type="com.bitElectro.vo.MemberVO" id="MemberResult">
+	<result column ="MID" property ="mid"/>
+	<result column ="MNAME" property ="mname"/>
+	<result column ="MPHONE" property ="mphone"/>
+	<result column ="MADDRESS" property ="maddress"/>
+	<result column ="MJUMIN" property ="mjumin"/>
+	<result column ="MEMAIL" property ="memail"/>
+	<result column ="MPOINT" property ="mpoint"/>
+	<result column ="MCUMULATIVE_BUY" property ="mcumulative_buy"/>
+	<result column ="MJOINDATE" property ="mjoindate"/>
+	<result column ="MCLASS" property ="mclass"/>
+</resultMap>
+
+
+<!-- 전체 가입 유저 리스트 -->
+<select id="selectAdminAll" resultType="com.bitElectro.vo.MemberVO">
+SELECT * FROM MEMBER ORDER BY MID
+</select>
+
+<!-- 아이디로 찾기 -->
+<select id = "selectAdminId" resultType="com.bitElectro.vo.MemberVO" parameterType="String">
+SELECT * FROM MEMBER WHERE MID LIKE #{mid } AND MCLASS &lt;= 1 ORDER BY MID
+</select>
+
+<!-- 이름으로 찾기 -->
+<select id = "selectListByName" resultType="com.bitElectro.vo.MemberVO" parameterType="String">
+SELECT * FROM MEMBER WHERE MNAME LIKE #{mname } AND MCLASS &lt;= 1 ORDER BY MID
+</select>
+
+<!--관리자 리스트 Select-->
+<select id="adminList" resultType="com.bitElectro.vo.MemberVO">
+SELECT * FROM MEMBER WHERE MCLASS &lt;= 1 ORDER BY MID
+</select>
+
+
+
+
+<!-- 등록 -->
+<insert id = "insertAdmin" parameterType="com.bitElectro.vo.MemberVO">
+INSERT INTO MEMBER (MID, MPW, MNAME
+			,MPHONE,MADDRESS,MJUMIN,MEMAIL,
+			MPOINT,MCUMULATIVE_BUY,MJOINDATE,MCLASS)
+VALUES (#{mid}, #{mpw}, #{mname}, #{mphone}, #{maddress}, #{mjumin}, #{memail}, 0, 0, SYSDATE, 1) 
+</insert>
+
+
+<!-- 관리자 정보 수정 -->
+<update id="updateAdmin" parameterType ="com.bitElectro.vo.MemberVO">
+UPDATE MEMBER SET
+MPW= #{mpw},
+MNAME= #{mname},
+MPHONE= #{mphone},
+MADDRESS= #{maddress},
+MJUMIN=#{mjumin},
+MEMAIL=#{memail}
+WHERE MID = #{mid}
+</update>
+
+<!-- 관리자 정보 삭제 -->
+<delete id ="deleteAdmin" parameterType="com.bitElectro.vo.MemberVO">
+DELETE FROM MEMBER WHERE MID = #{mid}
+</delete>
+
+<!--======================================  상품 정보  =============================================-->
+<resultMap type="com.bitElectro.vo.ProductVO" id="ProductResult">
+	<result column ="PCODE" property ="pcode"/>
+	<result column ="CNO" property ="cno"/>
+	<result column ="PNAME" property ="pname"/>
+	<result column ="PPRICE" property ="pprice"/>
+	<result column ="PIMAGE" property ="pimage"/>
+	<result column ="PSTOCK" property ="pstock"/>
+	<result column ="PDESCRIPTION" property ="pdescription"/>
+	<result column ="PDISCOUNT" property ="pdiscount"/>
+	<result column ="PREGIST" property ="pregist"/>
+	<result column ="PCUMULATIVE_SALES" property ="pcumulative_salesclass"/>
+	<result column ="PREATING" property ="preating"/>
+	<result column ="PREVIEW_COUNT" property ="preview_count"/>
+
+</resultMap>
+
+<!-- 상품 전체리스트 불러오기 -->
+<select id="selectProdAll" resultType="com.bitElectro.vo.ProductVO">
+SELECT * FROM PRODUCT
+</select> 
+
+<!-- 카테고리 X 제품 리스트 -->
+<select id ="selectCpList" resultType="com.bitElectro.vo.CateProdVO">
+SELECT PCODE, PNAME,P.CNO, cmain,cmiddle,csub,PPRICE, PSTOCK,PREGIST
+FROM PRODUCT P, CATEGORY C
+where p.cno=c.cno
+</select>
+
+<select id ="selectCpListByCmain" resultType="com.bitElectro.vo.CateProdVO" parameterType="String">
+SELECT PCODE, PNAME,P.CNO, PIMAGE, cmain,cmiddle,csub,PPRICE, PSTOCK,PREGIST
+FROM PRODUCT P, CATEGORY C
+where p.cno=c.cno AND CMAIN = #{cmain}
+</select>
+
+<!-- 카테고리 X 제품 WHERE 검색어 리스트 -->
+
+<select id="selectKeyList" resultType="com.bitElectro.vo.CateProdVO" parameterType="String">
+SELECT PCODE, PNAME,P.CNO, cmain,cmiddle,csub,PPRICE, PSTOCK,PREGIST
+FROM PRODUCT P, CATEGORY C
+Where pname Like #{pname} and p.cno=c.cno
+</select>
+
+<!-- 카테고리 분류만으로 찾기 -->
+<select id="selectCateList" resultType="com.bitElectro.vo.CateProdVO" parameterType="com.bitElectro.vo.CategoryVO">
+SELECT PNAME,P.CNO, cmain,cmiddle,csub,PPRICE, PSTOCK,PREGIST
+FROM PRODUCT P, CATEGORY C
+Where p.cno=c.cno and cmain = #{cmain} and cmiddle = #{cmiddle} and csub = #{csub}
+
+</select>
+
+
+<!-- pcode로 상품 찾기 -->
+<select id="selectProd" resultType="com.bitElectro.vo.ProductVO" parameterType="String">
+SELECT * FROM PRODUCT WHERE PCODE = #{pcode}
+</select>
+
+<!-- pname으로 상품 찾기 -->
+<select id="selectProdNyPname" resultType="com.bitElectro.vo.ProductVO" parameterType="String">
+SELECT * FROM PRODUCT WHERE PNAME = #{pname}
+</select>
+
+<!-- 상품 등록하기 -->
+<insert id="insertProd" parameterType="com.bitElectro.vo.ProductVO">
+INSERT INTO PRODUCT(PCODE,CNO,PNAME,PPRICE,PIMAGE
+,PSTOCK,PDESCRIPTION,PDISCOUNT,PREGIST
+,PCUMULATIVE_SALES,PREATING,PREVIEW_COUNT
+)
+VALUES(#{pcode}||PRODUCT_PCODE_SEQ.NEXTVAL,#{cno},#{pname},#{pprice},#{pimage},#{pstock},#{pdescription},0,SYSDATE,0,0,0)
+</insert>
+
+<!-- 썸네일 이미지만 업데이트 -->
+<update id="updatePimage" parameterType="com.bitElectro.vo.ProductVO">
+UPDATE PRODUCT SET
+PIMAGE = #{pimage}
+WHERE PCODE=#{pcode};
+</update>
+
+<!-- 상세페이지 이미지만 업데이트 -->
+<update id ="updatePdesc" parameterType="com.bitElectro.vo.ProductVO">
+UPDATE PRODUCT SET
+PDESCRIPTION = #{pdescription}
+WHERE PCODE=#{pcode};
+</update>
+
+<!-- 상품 정보 업데이트 -->
+<update id ="updateProd" parameterType="com.bitElectro.vo.ProductVO">
+UPDATE PRODUCT SET
+CNO = #{cno},
+PNAME = #{pname},
+PPRICE = #{pprice},
+PSTOCK = #{pstock},
+PDISCOUNT =#{pdiscount},
+PREGIST =SYSDATE
+WHERE PCODE =#{pcode}
+</update>
+
+<delete id="deleteProd" parameterType="String">
+DELETE FROM PRODUCT WHERE PCODE = #{pcode}
+</delete>
+<!-- ============================================================= -->
+
+<!-- 가격높은순 -->
+<select id="highPriceAll" resultType="com.bitElectro.vo.ProductVO" parameterType="string">
+SELECT * FROM PRODUCT ORDER BY PPRICE DESC
+</select>
+<!-- 가격낮은순 -->
+<select id="rowPriceAll" resultType="com.bitElectro.vo.ProductVO" parameterType="string">
+SELECT * FROM PRODUCT ORDER BY PPRICE ASC
+</select>
+
+<!-- 베스트상품100(누적판매순으로 일단 10개만) -->
+<select id="selectProdSal" resultType="com.bitElectro.vo.ProductVO" parameterType="string">
+SELECT *
+FROM (
+    SELECT *
+    FROM PRODUCT
+    ORDER BY PCUMULATIVE_SALES DESC
+)
+WHERE ROWNUM &lt;= 10
+</select>
+
+<!-- 평점순 -->
+<select id="reatPrice" resultType="com.bitElectro.vo.ProductVO" parameterType="string">
+SELECT * FROM PRODUCT ORDER BY PREATING DESC
+</select>
+
+<!-- TOP4 -->
+<select id="topSalFour" resultType="com.bitElectro.vo.ProductVO">
+SELECT *
+FROM (
+    SELECT *
+    FROM PRODUCT
+    ORDER BY PCUMULATIVE_SALES DESC
+)
+WHERE ROWNUM &lt;= 4
+</select>
+
+<!-- 전체 상품 갯수 조회 -->
+<select id="totalCount" resultType="int">
+	SELECT COUNT(*) AS CNT FROM PRODUCT
+</select>
+
+<!-- 페이지에 해당하는 상품 조회 -->
+<select id="list" resultType="com.bitElectro.vo.ProductVO" parameterType="map">
+SELECT * 
+FROM (SELECT ROWNUM R_NUM, P.*
+		FROM (SELECT *
+				FROM PRODUCT
+			ORDER BY PCODE DESC
+			 ) P
+		)
+WHERE R_NUM BETWEEN #{begin} AND #{end}
+</select>
+
+
+<!-- ============================================================= -->
+
+
+
+
+<!--===================카테고리 찾기===============================  -->
+<select id = "selectCtOne" resultType="com.bitElectro.vo.CategoryVO" parameterType="com.bitElectro.vo.CategoryVO">
+SELECT * FROM CATEGORY
+WHERE CMAIN= #{cmain} AND CMIDDLE =#{cmiddle}	AND CSUB=#{csub}
+</select>
+
+<select id = "selectCateByNum" resultType="com.bitElectro.vo.CategoryVO" parameterType="String">
+SELECT * FROM CATEGORY
+WHERE CNO = #{cno}
+</select>
+
+<!--=================== 고객 정보 관련 ==============================-->
+
+<select id= "selectCustList" resultType="com.bitElectro.vo.MemberVO">
+SELECT * FROM MEMBER WHERE MCLASS = 2 ORDER BY MID
+</select>
+
+<select id ="selectCustListByName" resultType="com.bitElectro.vo.MemberVO" parameterType="String">
+SELECT * FROM MEMBER WHERE MCLASS = 2 AND MNAME like #{mname} ORDER BY MID
+</select>
+
+<!-- 아이디로 리스트 찾기 -->
+<select id = "selectCustId" resultType="com.bitElectro.vo.MemberVO" parameterType="String">
+SELECT * FROM MEMBER WHERE MID like #{mid } AND MCLASS = 2 ORDER BY MID
+</select>
+
+<!-- 아이디로 한명의 정보 찾기  -->
+<select id="selectOneCustId" resultType="com.bitElectro.vo.MemberVO" parameterType="String">
+SELECT * FROM MEMBER WHERE MID = #{mid } AND MCLASS = 2
+</select>
+
+<!-- 고객 정보 수정 -->
+<update id="updateCust" parameterType ="com.bitElectro.vo.MemberVO">
+UPDATE MEMBER SET
+MPW= #{mpw},
+MNAME= #{mname},
+MPHONE= #{mphone},
+MADDRESS= #{maddress},
+MJUMIN=#{mjumin},
+MEMAIL=#{memail},
+MPOINT = #{mpoint},
+MCUMULATIVE_BUY = #{mcumulative_buy}
+WHERE MID = #{mid}
+</update>
+
+<!-- 고객 정보 삭제 -->
+<delete id="deleteCustById" parameterType="String">
+DELETE FROM MEMBER WHERE MID = #{mid}
+</delete>
+
+
+<!-- 일정 구매금액을 초과한 고객 찾기 -->
+<select id="selectByCumul" resultType="com.bitElectro.vo.MemberVO" parameterType="String">
+SELECT * FROM MEMBER WHERE MCUMULATIVE_BUY &gt;= #{mcumulative_buy} AND MCLASS=2 ORDER BY MID
+</select>
+
+<!--=====================매출 정보 관련 ========================= -->
+
+<!-- 이번달 주문/매출 정보 -->
+<select id="currMothlyList" resultType="com.bitElectro.vo.OrderBookDetailVO">
+
+SELECT ODNO, OD.ONO, PCODE, CNO, PPRICE, PCNT, TO_CHAR(ODATE,'yy/MM/dd') AS ODATE, O_AMOUNT
+FROM ORDER_BOOK OB, ORDER_DETAIL OD
+WHERE OB.ONO = OD.ONO 
+AND TO_CHAR(ODATE,'MM')= TO_CHAR(SYSDATE,'MM') ORDER BY ODATE DESC
+
+</select>
+
+<select id ="selectYearAmount" resultType="com.bitElectro.vo.PeriodAmountVO">
+SELECT SUBSTR(ODATE,1,2) as "PERIOD", SUM(O_AMOUNT) AS "PERIOD_AMOUNT"
+FROM ORDER_BOOK OB, ORDER_DETAIL OD
+WHERE OB.ONO = OD.ONO
+GROUP BY SUBSTR(ODATE,1,2)
+ORDER BY 1
+</select>
+
+<select id="selectMonthAmount" resultType="com.bitElectro.vo.PeriodAmountVO" parameterType="String">
+SELECT SUBSTR(ODATE,4,2) as "OY", sum(O_AMOUNT) AS OYA
+FROM ORDER_BOOK OB, ORDER_DETAIL OD
+WHERE OB.ONO = OD.ONO and to_char(odate,'yy') = #{year}
+group by SUBSTR(ODATE,4,2)
+ORDER BY 1
+</select>
+
+<select id="selectDateAmount" resultType="com.bitElectro.vo.PeriodAmountVO" parameterType="String">
+SELECT SUBSTR(ODATE,7,2) as "OD", SUM(O_AMOUNT) AS ODA
+FROM ORDER_BOOK OB, ORDER_DETAIL OD
+WHERE OB.ONO = OD.ONO AND TO_CHAR(ODATE,'MM') = #{month}
+GROUP BY SUBSTR(ODATE,7,2) 
+ORDER BY 1
+</select>
+
+<!-- 쿠폰 관련 정보 -->
+<select id="selectCouponList" resultType="com.bitElectro.vo.CouponVO">
+SELECT COUNT(CNAME) AS CNT,CORDATE, CNAME, CDISPER, CDISCASH, CVALIDITY  FROM COUPON
+GROUP BY CNAME, CORDATE, CDISPER, CDISCASH, CVALIDITY
+ORDER BY CORDATE
+</select>
+
+
+<!-- 검색으로 쿠폰 찾기 -->
+<select id="selectAllCouplist" resultType="com.bitElectro.vo.CouponVO" parameterType="String">
+SELECT COUNT(CNAME) AS CNT,CORDATE, CNAME, CDISPER, CDISCASH, CVALIDITY  FROM COUPON
+GROUP BY CNAME, CORDATE, CDISPER, CDISCASH, CVALIDITY
+HAVING CNAME LIKE #{cname}
+ORDER BY CORDATE
+</select>
+
+
+<select id= "insertCoupon" parameterType="com.bitElectro.vo.CouponVO">
+INSERT INTO COUPON (CONO,MID,CNAME,CDISPER,CDISCASH,CORDATE,CVALIDITY)
+VALUES (COUPON_CONO_SEQ.NEXTVAL, #{mid},#{cname},#{cdisper},#{cdiscash},SYSDATE,#{cvalidity})
+</select>
+
+
+
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
