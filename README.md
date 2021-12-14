@@ -10,11 +10,12 @@
   
 <hr>
 
-<h2>📌&nbsp;2. 소스코드</h2><br> 
-● model <br>
-● view <br>
-● controller <br>
-● sql <br>
+<h2>📌&nbsp;2. 소스코드</h2>
+
+* model 
+* [view](/bitElectro/src/com/bc/model/vo/)
+* controller 
+* sql 
 
 <h2>📌&nbsp;3. 구현 ERD</h2><br> 
 
